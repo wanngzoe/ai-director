@@ -30,6 +30,8 @@ interface Character {
   description: string
   outfits: string[]
   voice?: string
+  props?: string[]  // 角色拥有的道具
+  sceneOutfits?: { scene: string; outfit: string }[]  // 角色在特定场景中的造型
 }
 
 interface Scene {
@@ -78,10 +80,10 @@ const sampleProject: Project = {
 }
 
 const sampleCharacters: Character[] = [
-  { id: '1', name: '林婉儿', role: 'protagonist', avatar: 'https://picsum.photos/seed/char1/200/200', description: '女主，28岁，干练女强人', outfits: ['https://picsum.photos/seed/outfit1a/200/200', 'https://picsum.photos/seed/outfit1b/200/200', 'https://picsum.photos/seed/outfit1c/200/200'], voice: '温柔女声' },
-  { id: '2', name: '陆霆琛', role: 'protagonist', avatar: 'https://picsum.photos/seed/char2/200/200', description: '男主，30岁，霸道总裁', outfits: ['https://picsum.photos/seed/outfit2a/200/200', 'https://picsum.photos/seed/outfit2b/200/200'], voice: '低沉男声' },
-  { id: '3', name: '苏晴', role: 'supporting', avatar: 'https://picsum.photos/seed/char3/200/200', description: '女二，富家千金', outfits: ['https://picsum.photos/seed/outfit3a/200/200'], voice: '甜美女声' },
-  { id: '4', name: '赵明', role: 'antagonist', avatar: 'https://picsum.photos/seed/char4/200/200', description: '反派，商业竞争对手', outfits: ['https://picsum.photos/seed/outfit4a/200/200'], voice: '成熟男声' },
+  { id: '1', name: '林婉儿', role: 'protagonist', avatar: '/images/林婉儿.jpg', description: '女主，28岁，干练女强人', outfits: ['https://picsum.photos/seed/outfit1a/200/200', 'https://picsum.photos/seed/outfit1b/200/200', 'https://picsum.photos/seed/outfit1c/200/200'], voice: '温柔女声', props: ['豪华钻戒', '笔记本电脑'], sceneOutfits: [{ scene: '总裁办公室', outfit: '职场造型' }, { scene: '豪华公寓', outfit: '家居服' }] },
+  { id: '2', name: '陆霆琛', role: 'protagonist', avatar: '/images/陆霆琛.jpg', description: '男主，30岁，霸道总裁', outfits: ['https://picsum.photos/seed/outfit2a/200/200', 'https://picsum.photos/seed/outfit2b/200/200'], voice: '低沉男声', props: ['豪华跑车'], sceneOutfits: [{ scene: '总裁办公室', outfit: '西装' }, { scene: '海边的黄昏', outfit: '休闲装' }] },
+  { id: '3', name: '苏晴', role: 'supporting', avatar: 'https://picsum.photos/seed/char3/200/200', description: '女二，富家千金', outfits: ['https://picsum.photos/seed/outfit3a/200/200'], voice: '甜美女声', props: ['香奈儿包包'], sceneOutfits: [{ scene: '公司年会', outfit: '晚礼服' }] },
+  { id: '4', name: '赵明', role: 'antagonist', avatar: '/images/赵明.jpg', description: '反派，商业竞争对手', outfits: ['https://picsum.photos/seed/outfit4a/200/200'], voice: '成熟男声', props: ['商业合同'], sceneOutfits: [{ scene: '会议室', outfit: '正装' }] },
 ]
 
 // Sample voice options
@@ -223,6 +225,7 @@ function Dashboard() {
         {/* Tab Navigation */}
         <div className="script-tabs" style={{ marginBottom: 24 }}>
           <button className={`script-tab ${activeTab === 'projects' ? 'active' : ''}`} onClick={() => setActiveTab('projects')}>我的项目</button>
+          <button className={`script-tab ${activeTab === 'operations' ? 'active' : ''}`} onClick={() => setActiveTab('operations')}>运营中心</button>
           <button className={`script-tab ${activeTab === 'notifications' ? 'active' : ''}`} onClick={() => setActiveTab('notifications')}>
             更新通知
             {unreadCount > 0 && <span style={{ marginLeft: 6, background: 'var(--danger)', color: 'white', fontSize: 11, padding: '2px 6px', borderRadius: 10 }}>{unreadCount}</span>}
@@ -279,6 +282,105 @@ function Dashboard() {
               </div>
             </section>
           </>
+        )}
+
+        {activeTab === 'operations' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* Banner运营区 */}
+            <section className="card" style={{ padding: 20 }}>
+              <h3 style={{ marginBottom: 16 }}>🎯 活动专区</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                {[
+                  { title: '新人专享', desc: '首月会员5折优惠', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', tag: '火热进行中' },
+                  { title: '邀请好友', desc: '邀请1人得500积分', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', tag: '限时活动' },
+                  { title: '每日签到', desc: '连续签到赢取大奖', bg: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', tag: '每日可参与' },
+                ].map((banner, idx) => (
+                  <div key={idx} style={{
+                    background: banner.bg,
+                    borderRadius: 12,
+                    padding: 20,
+                    color: 'white',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    minHeight: 120,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
+                  }}>
+                    <span style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }}>{banner.tag}</span>
+                    <div>
+                      <h4 style={{ margin: '8px 0 4px', fontSize: 18 }}>{banner.title}</h4>
+                      <p style={{ margin: 0, opacity: 0.9, fontSize: 13 }}>{banner.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* 福利公告 */}
+            <section className="card" style={{ padding: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <h3>📢 福利公告</h3>
+                <button style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: 13 }}>查看全部</button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {[
+                  { title: '🎉 平台升级公告', date: '2024-03-07', tag: '系统通知', color: 'var(--primary)' },
+                  { title: '💰 积分商城上线通知', date: '2024-03-05', tag: '活动通知', color: '#f59e0b' },
+                  { title: '📚 新手教程上线', date: '2024-03-01', tag: '帮助文档', color: '#10b981' },
+                  { title: '🎁 会员权益更新', date: '2024-02-28', tag: '会员专享', color: '#ef4444' },
+                ].map((notice, idx) => (
+                  <div key={idx} style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '12px 16px',
+                    background: 'var(--bg-input)',
+                    borderRadius: 8,
+                    cursor: 'pointer'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <span style={{ fontSize: 16 }}>{notice.title}</span>
+                      <span style={{ fontSize: 11, padding: '2px 8px', background: notice.color + '20', color: notice.color, borderRadius: 4 }}>{notice.tag}</span>
+                    </div>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{notice.date}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* 积分奖励 */}
+            <section className="card" style={{ padding: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <h3>🪙 积分奖励</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>当前积分：</span>
+                  <span style={{ fontSize: 20, fontWeight: 'bold', color: '#f59e0b' }}>2,580</span>
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+                {[
+                  { title: '每日签到', points: '+10', icon: '📅', desc: '每日可签到' },
+                  { title: '分享作品', points: '+50', icon: '📤', desc: '分享到社交平台' },
+                  { title: '完善资料', points: '+100', icon: '📝', desc: '完善个人资料' },
+                  { title: '邀请好友', points: '+500', icon: '👥', desc: '邀请新用户' },
+                ].map((task, idx) => (
+                  <div key={idx} style={{
+                    background: 'var(--bg-input)',
+                    borderRadius: 12,
+                    padding: 16,
+                    textAlign: 'center',
+                    cursor: 'pointer'
+                  }}>
+                    <span style={{ fontSize: 28 }}>{task.icon}</span>
+                    <h4 style={{ margin: '8px 0 4px', fontSize: 14 }}>{task.title}</h4>
+                    <span style={{ color: '#10b981', fontWeight: 'bold' }}>{task.points}</span>
+                    <p style={{ margin: '4px 0 0', fontSize: 11, color: 'var(--text-muted)' }}>{task.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
         )}
 
         {activeTab === 'notifications' && (
@@ -753,14 +855,16 @@ function CastingCenter() {
                 className={`character-card ${selectedChar?.id === char.id ? 'selected' : ''}`}
                 onClick={() => setSelectedChar(char)}
               >
-                <div className="character-avatar" style={{ padding: 8, background: 'var(--bg-input)', borderRadius: 12 }}>
-                  {/* 3 Views + Close-up Display */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4, marginBottom: 6 }}>
-                    <div style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg,#475569,#64748b)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'var(--text-muted)' }}>正脸</div>
-                    <div style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg,#475569,#64748b)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'var(--text-muted)' }}>侧脸</div>
-                    <div style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg,#475569,#64748b)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'var(--text-muted)' }}>侧脸</div>
-                    <div style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg,#475569,#64748b)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'var(--text-muted)' }}>特写</div>
-                  </div>
+                <div className="character-avatar">
+                  <img src={char.avatar} alt={char.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {/* Generate AI Image Button Overlay */}
+                  <button
+                    className="btn btn-sm"
+                    style={{ position: 'absolute', bottom: 8, left: 8, right: 8, fontSize: 10, padding: '4px 8px', background: 'rgba(0,0,0,0.6)', color: 'white', borderRadius: 4 }}
+                    onClick={(e) => { e.stopPropagation(); alert('AI正在生成形象，请稍候...') }}
+                  >
+                    <Sparkles size={10} /> 生成AI形象
+                  </button>
                   <span className={`role-badge ${char.role}`}>
                     {char.role === 'protagonist' ? '主角' : char.role === 'antagonist' ? '反派' : '配角'}
                   </span>
@@ -792,31 +896,35 @@ function CastingCenter() {
               <button className="btn btn-sm btn-outline" onClick={() => setSelectedChar(null)}>关闭</button>
             </div>
 
-            <div className="detail-content">
-              {/* Current Image with 3 Views + Close-up */}
+            <div className="detail-content" style={{ padding: '0 24px' }}>
+              {/* 1. Character Official Image */}
               <div className="detail-section">
-                <h4>当前形象</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 12 }}>
-                  <div>
-                    <div style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg,#475569,#64748b)', borderRadius: 8, marginBottom: 4 }}></div>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', textAlign: 'center' }}>正视图</span>
-                  </div>
-                  <div>
-                    <div style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg,#475569,#64748b)', borderRadius: 8, marginBottom: 4 }}></div>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', textAlign: 'center' }}>侧视图</span>
-                  </div>
-                  <div>
-                    <div style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg,#475569,#64748b)', borderRadius: 8, marginBottom: 4 }}></div>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', textAlign: 'center' }}>背视图</span>
-                  </div>
-                  <div>
-                    <div style={{ aspectRatio: '3/4', background: 'linear-gradient(135deg,#475569,#64748b)', borderRadius: 8, marginBottom: 4 }}></div>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', textAlign: 'center' }}>特写</span>
-                  </div>
+                <h4>🎬 定妆形象</h4>
+                <div
+                  style={{
+                    width: '100%',
+                    height: 280,
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                    background: 'var(--bg-input)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  onClick={() => window.open(selectedChar.avatar, '_blank')}
+                  title="点击查看大图"
+                >
+                  <img
+                    src={selectedChar.avatar}
+                    alt={selectedChar.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
                 </div>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>点击图片查看大图</p>
               </div>
 
-              {/* Voice Selection */}
+              {/* 2. Voice Selection */}
               <div className="detail-section">
                 <h4><span style={{ marginRight: 8 }}>🎤</span>音色配音</h4>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -840,81 +948,75 @@ function CastingCenter() {
                 <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>选择适合角色的配音音色，用于AI生成对话</p>
               </div>
 
-              {/* Add New Outfit - Three Ways */}
+              {/* 3. Character Props */}
               <div className="detail-section">
-                <h4>添加新造型</h4>
-                <div className="add-outfit-tabs">
-                  <button className="add-outfit-tab active">
-                    <Wand2 size={16} /> AI生成
-                  </button>
-                  <button className="add-outfit-tab">
-                    <Image size={16} /> 资产库
-                  </button>
-                  <button className="add-outfit-tab">
-                    <Upload size={16} /> 本地上传
-                  </button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <h4><span style={{ marginRight: 8 }}>🎁</span>角色拥有道具</h4>
+                  <button className="btn btn-sm" style={{ background: 'var(--bg-input)' }}>+ 添加道具</button>
                 </div>
-
-                {/* AI Generate */}
-                <div className="add-outfit-content">
-                  <textarea
-                    className="ai-prompt-input large"
-                    placeholder="描述你想要的人物形象，如：25岁女性，短发，穿职业装，表情冷峻..."
-                  />
-                  <button className="btn btn-primary" style={{ marginTop: 12, width: '100%' }}>
-                    <Sparkles size={16} /> 生成新形象
-                  </button>
-                </div>
-
-                {/* Asset Library - Hidden by default, shown when tab selected */}
-                <div className="asset-library" style={{ display: 'none' }}>
-                  <div className="asset-grid">
-                    {[1,2,3,4,5,6].map(i => (
-                      <div key={i} className="asset-item">
-                        <img src={`https://picsum.photos/seed/asset${i}/100/100`} alt="资产" />
-                        <span>选择</span>
-                      </div>
+                {selectedChar.props && selectedChar.props.length > 0 ? (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {selectedChar.props.map((prop, idx) => (
+                      <span key={idx} style={{ padding: '6px 12px', background: 'var(--bg-input)', borderRadius: 6, fontSize: 13 }}>{prop}</span>
                     ))}
                   </div>
-                </div>
+                ) : (
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>暂无道具关联</p>
+                )}
+              </div>
 
-                {/* Local Upload - Hidden by default */}
-                <div className="local-upload" style={{ display: 'none' }}>
-                  <div className="upload-zone-large">
-                    <Upload size={32} />
-                    <span>拖拽图片或点击上传</span>
-                    <span className="hint">支持 JPG、PNG 格式</span>
+              {/* 4. Other Outfits with Scene Association */}
+              <div className="detail-section">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <h4>👔 其他造型 ({selectedChar.outfits.length})</h4>
+                  <button className="btn btn-sm" style={{ background: 'var(--primary)', color: 'white' }}>+ 添加造型</button>
+                </div>
+                {selectedChar.outfits.length > 0 ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+                    {selectedChar.outfits.map((outfit, idx) => {
+                      const sceneOutfit = selectedChar.sceneOutfits?.[idx]
+                      return (
+                        <div key={idx} style={{ background: 'var(--bg-input)', borderRadius: 10, overflow: 'hidden' }}>
+                          <div
+                            style={{ width: '100%', aspectRatio: '9/16', borderRadius: 8, overflow: 'hidden', cursor: 'pointer' }}
+                            onClick={() => window.open(outfit, '_blank')}
+                            title="点击查看大图"
+                          >
+                            <img src={outfit} alt={`造型${idx+1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </div>
+                          <div style={{ padding: 8 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                              <span style={{ fontSize: 12, fontWeight: 500 }}>造型 {idx + 1}</span>
+                              <button style={{ fontSize: 11, background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer' }}>设为主形象</button>
+                            </div>
+                            {/* Scene Association */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11 }}>
+                              <span style={{ color: 'var(--text-muted)' }}>场景：</span>
+                              {sceneOutfit ? (
+                                <span style={{ padding: '2px 8px', background: 'var(--bg-card)', borderRadius: 4 }}>{sceneOutfit.scene}</span>
+                              ) : (
+                                <button style={{ fontSize: 11, background: 'none', border: '1px dashed var(--border)', borderRadius: 4, padding: '2px 8px', color: 'var(--text-muted)', cursor: 'pointer' }}>+ 关联</button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
-                </div>
+                ) : (
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>暂无其他造型</p>
+                )}
               </div>
 
-              {/* Existing Outfits */}
+              {/* 5. AI Recommendations */}
               <div className="detail-section">
-                <h4>已有造型 ({selectedChar.outfits.length})</h4>
-                <div className="outfits-list">
-                  {selectedChar.outfits.map((outfit, idx) => (
-                    <div key={idx} className="outfit-row">
-                      <img src={outfit} alt={`造型${idx+1}`} />
-                      <div className="outfit-info">
-                        <span>造型 {idx+1}</span>
-                        <button className="btn-link">设为主形象</button>
-                      </div>
-                      <button className="btn-icon"><MoreVertical size={16} /></button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* AI Recommendations */}
-              <div className="detail-section">
-                <h4><Wand2 size={14} /> 为您推荐</h4>
+                <h4><Wand2 size={14} /> 为您推荐造型</h4>
                 <p className="hint">根据角色特征推荐的相似形象</p>
-                <div className="ai-recommends">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 12 }}>
                   {[1,2,3,4].map(i => (
-                    <div key={i} className="recommend-card">
-                      <img src={`https://picsum.photos/seed/rec${i}/80/80`} alt="推荐" />
-                      <span className="similarity">{95-i*5}% 相似</span>
-                      <button className="btn btn-sm btn-outline">使用</button>
+                    <div key={i} style={{ position: 'relative', cursor: 'pointer' }} onClick={() => window.open(`https://picsum.photos/seed/rec${i}/540/960`, '_blank')}>
+                      <img src={`https://picsum.photos/seed/rec${i}/90/160`} alt="推荐" style={{ width: '100%', aspectRatio: '9/16', objectFit: 'cover', borderRadius: 8 }} />
+                      <span style={{ position: 'absolute', bottom: 6, left: 6, right: 6, background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: 10, padding: '2px 6px', borderRadius: 4, textAlign: 'center' }}>{95-i*5}% 相似</span>
                     </div>
                   ))}
                 </div>

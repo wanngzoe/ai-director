@@ -883,7 +883,7 @@ body {
   right: 0;
   top: 0;
   bottom: 0;
-  width: 500px;
+  width: 700px;
   background: var(--bg-card);
   border-left: 1px solid var(--border);
   z-index: 200;
