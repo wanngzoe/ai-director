@@ -4,15 +4,11 @@ import {
   Layout, FileText, Users, Image, Clapperboard,
   Play, Scissors, Download, Plus,
   MoreVertical, Clock, CheckCircle,
-  Settings, ChevronRight, Sparkles, Wand2, Video,
+  Upload, Settings, ChevronRight, Sparkles, Wand2, Video,
   ArrowRight, Wand, Package, ListChecks, Bell, AlertCircle, ExternalLink,
   FileCheck, Languages
 } from 'lucide-react'
 import './App.css'
-import AIDirectorWorkflow from './AIDirectorWorkflow'
-import ScriptStudio from './ScriptStudio'
-import OldScriptStudio from './OldScriptStudio'
-import EnhancedDirectorDemo from './pages/EnhancedDirectorDemo'
 
 // Types
 interface Project {
@@ -190,15 +186,12 @@ function Dashboard() {
   }
 
   const platformUpdates = [
-    { id: 1, version: 'v3.2', title: '🎉 增强版AI导演工作台', desc: '基于Seedance 2.0优化，中文提示词+参考图+质量检查', date: '2024-03-13', category: 'feature', link: '/enhanced-director' },
-    { id: 2, version: 'v3.1', title: '分镜导演台全新改版', desc: '左右布局优化，视频预览更直观，支持24寸大屏', date: '2024-03-07', category: 'feature', link: '/storyboard' },
-    { id: 3, version: 'v3.0', title: '工作区模式上线', desc: '项目层级关系优化，多项目切换更便捷', date: '2024-03-01', category: 'feature', link: '/' },
-    { id: 4, version: 'v2.9', title: 'Seedance 2.1', desc: '新增长镜头保持功能，一致性更强', date: '2024-02-25', category: 'model', link: '/storyboard' },
-    { id: 5, version: '帮助', title: '新手指南', desc: '快速上手AI Director，了解核心功能', date: '常驻', category: 'help', link: '/help' },
-    { id: 6, version: '帮助', title: '分镜导演台使用手册', desc: '学习如何高效使用分镜导演功能', date: '常驻', category: 'help', link: '/help/storyboard' },
-    { id: 7, version: '帮助', title: '视频生成模型对比', desc: 'Seedance与Wan模型特点及适用场景', date: '常驻', category: 'help', link: '/help/models' },
-    { id: 8, version: '新功能', title: 'AI导演工作流测试', desc: '剧本→分镜→提示词 三阶段测试工具', date: '常驻', category: 'feature', link: '/ai-workflow' },
-    { id: 9, version: '历史', title: '旧版剧本工坊(v3.2)', desc: '查看MVP优化前的剧本工坊版本', date: '常驻', category: 'history', link: '/script-studio-old' },
+    { id: 1, version: 'v3.1', title: '分镜导演台全新改版', desc: '左右布局优化，视频预览更直观，支持24寸大屏', date: '2024-03-07', category: 'feature', link: '/storyboard' },
+    { id: 2, version: 'v3.0', title: '工作区模式上线', desc: '项目层级关系优化，多项目切换更便捷', date: '2024-03-01', category: 'feature', link: '/' },
+    { id: 3, version: 'v2.9', title: 'Seedance 2.1', desc: '新增长镜头保持功能，一致性更强', date: '2024-02-25', category: 'model', link: '/storyboard' },
+    { id: 4, version: '帮助', title: '新手指南', desc: '快速上手AI Director，了解核心功能', date: '常驻', category: 'help', link: '/help' },
+    { id: 5, version: '帮助', title: '分镜导演台使用手册', desc: '学习如何高效使用分镜导演功能', date: '常驻', category: 'help', link: '/help/storyboard' },
+    { id: 6, version: '帮助', title: '视频生成模型对比', desc: 'Seedance与Wan模型特点及适用场景', date: '常驻', category: 'help', link: '/help/models' },
   ]
 
   const unreadCount = notifications.filter(n => !n.read).length
@@ -286,10 +279,6 @@ function Dashboard() {
                 <Link to="/project/1?module=storyboard" className="quick-card">
                   <Clapperboard size={32} />
                   <span>分镜导演</span>
-                </Link>
-                <Link to="/ai-workflow" className="quick-card" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)' }}>
-                  <Sparkles size={32} />
-                  <span>AI导演<br/>工作流</span>
                 </Link>
               </div>
             </section>
@@ -715,6 +704,342 @@ function ProjectWorkspace() {
     </div>
   )
 }
+
+// Page 2: Script Studio (Refactored)
+function ScriptStudio() {
+  const navigate = useNavigate()
+  const [scriptText, setScriptText] = useState('')
+  const [activeTab, setActiveTab] = useState('edit')
+  const [parsedView, setParsedView] = useState(false)
+  const [customPrompt, setCustomPrompt] = useState('')
+  const [showCustomPanel, setShowCustomPanel] = useState(false)
+
+  // Sample long script for demo
+  const sampleScript = `第1集：初次相遇
+
+[第一场] 总裁办公室-夜
+（内景）
+
+林婉儿站在落地窗前，手握文件，背对着门。
+陆霆琛推门而入，西装笔挺，面色冷峻。
+
+林婉儿：（回头）陆总，您来了。
+
+陆霆琛：（走近）文件准备好了？
+林婉儿：是的，这是收购方案的所有细节。
+
+[第二场] 会议室-夜
+（内景）
+
+长会议桌旁，赵明坐在主位，翻看着文件。
+林婉儿站在投影屏前，讲解着方案。
+
+赵明：这个价格，不太合理吧？
+林婉儿：赵总，这已经是最低价了。
+
+[第三场] 走廊-夜
+（内景）
+
+林婉儿快步走向电梯，陆霆琛突然出现。
+`
+
+  return (
+    <div className="dashboard-page">
+      <main className="dashboard-content">
+        <div className="page-header">
+          <h1>剧本工坊</h1>
+          <div className="header-actions">
+            <button className="btn btn-outline">
+              <Upload size={18} />导入剧本
+            </button>
+            <button className="btn btn-primary" onClick={() => setParsedView(true)}>
+              <Wand2 size={18} />AI智能解析
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="script-tabs">
+          <button className={`script-tab ${activeTab === 'edit' ? 'active' : ''}`} onClick={() => setActiveTab('edit')}>剧本编辑</button>
+          <button className={`script-tab ${activeTab === 'novel' ? 'active' : ''}`} onClick={() => setActiveTab('novel')}>小说转剧本</button>
+          {parsedView && <button className={`script-tab ${activeTab === 'parsed' ? 'active' : ''}`} onClick={() => setActiveTab('parsed')}>解析结果</button>}
+        </div>
+
+        {activeTab === 'edit' && (
+          <div className="script-editor-container" style={{ display: 'flex', gap: 24 }}>
+            {/* Main Editor Area */}
+            <div className="script-editor-main" style={{ flex: 1 }}>
+              <div className="script-toolbar">
+                <button className="btn btn-sm btn-secondary">保存剧本</button>
+                <button className="btn btn-sm btn-outline">导出</button>
+                <button className="btn btn-sm btn-outline">格式调整</button>
+                <button className="btn btn-sm btn-outline">分集设置</button>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+                  <button className="btn btn-sm" style={{ background: showCustomPanel ? 'var(--primary-hover)' : 'var(--primary)', color: 'white' }} onClick={() => setShowCustomPanel(!showCustomPanel)}>
+                    <Wand2 size={14} /> AI自定义修改 {showCustomPanel ? '✕' : ''}
+                  </button>
+                </div>
+              </div>
+              <textarea
+                className="script-textarea-large"
+                placeholder="在这里编辑剧本内容...
+
+支持格式：
+[场次号] 场景-时间
+（内/外景）
+
+角色名：（动作描述）对白内容
+
+支持长文本自动滚动..."
+                value={scriptText || sampleScript}
+                onChange={(e) => setScriptText(e.target.value)}
+                style={{ minHeight: 'calc(100vh - 300px)' }}
+              />
+            </div>
+
+            {/* Conditional Side Panel */}
+            {showCustomPanel && (
+              <div className="ai-assistant-panel" style={{ width: 360, flexShrink: 0, maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+                <h3><Wand2 size={18} />AI自定义修改</h3>
+
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 8 }}>修改要求</div>
+                  <textarea
+                    style={{
+                      width: '100%', minHeight: 120, padding: 14, background: 'var(--bg-card)',
+                      border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)',
+                      fontSize: 14, lineHeight: 1.6, resize: 'vertical'
+                    }}
+                    placeholder="请输入您的修改要求，例如：
+
+- 把开头改成更有悬念的风格
+- 增加男女主角初次相遇的冲突
+- 让台词更加口语化"
+                    value={customPrompt}
+                    onChange={(e) => setCustomPrompt(e.target.value)}
+                  />
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 8 }}>修改范围</div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button className="btn btn-sm" style={{ background: 'var(--primary)', color: 'white' }}>仅开头</button>
+                    <button className="btn btn-sm" style={{ background: 'var(--bg-input)' }}>全剧本</button>
+                    <button className="btn btn-sm" style={{ background: 'var(--bg-input)' }}>指定段落</button>
+                  </div>
+                </div>
+
+                <button className="btn btn-primary" style={{ width: '100%', marginBottom: 16 }}>
+                  <Wand2 size={16} /> 执行修改
+                </button>
+
+                {/* Quick Templates */}
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 8 }}>快速模板</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div
+                      style={{ padding: 10, background: 'var(--bg-input)', borderRadius: 6, cursor: 'pointer', fontSize: 12 }}
+                      onClick={() => setCustomPrompt('增加悬念感，让读者想知道后续发生了什么')}
+                    >
+                      增加悬念
+                    </div>
+                    <div
+                      style={{ padding: 10, background: 'var(--bg-input)', borderRadius: 6, cursor: 'pointer', fontSize: 12 }}
+                      onClick={() => setCustomPrompt('加快节奏，删除冗余描述，保持紧张感')}
+                    >
+                      加快节奏
+                    </div>
+                    <div
+                      style={{ padding: 10, background: 'var(--bg-input)', borderRadius: 6, cursor: 'pointer', fontSize: 12 }}
+                      onClick={() => setCustomPrompt('加入更多人物心理描写，让角色更立体')}
+                    >
+                      心理描写
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* AI Assistant Panel (hidden when custom panel is shown) */}
+            {!showCustomPanel && (
+              <div className="ai-assistant-panel">
+                <h3><Wand2 size={18} />AI编剧助手</h3>
+
+                <div className="ai-tools-grid">
+                  <div className="ai-tool-card" style={{ cursor: 'pointer' }} onClick={() => alert('AI正在优化开头，请稍候...')}>
+                    <h4>开头精修 <Play size={12} style={{ marginLeft: 4, opacity: 0.6 }} /></h4>
+                    <p>设计更抓人的剧本开头</p>
+                  </div>
+                  <div className="ai-tool-card" style={{ cursor: 'pointer' }} onClick={() => alert('AI正在续写剧本，请稍候...')}>
+                    <h4>续写剧本 <Play size={12} style={{ marginLeft: 4, opacity: 0.6 }} /></h4>
+                    <p>AI根据现有剧情继续编写</p>
+                  </div>
+                  <div className="ai-tool-card" style={{ cursor: 'pointer' }} onClick={() => alert('AI正在优化台词，请稍候...')}>
+                    <h4>优化台词 <Play size={12} style={{ marginLeft: 4, opacity: 0.6 }} /></h4>
+                    <p>让对白更自然流畅</p>
+                  </div>
+                  <div className="ai-tool-card" style={{ cursor: 'pointer' }} onClick={() => alert('AI正在增加冲突，请稍候...')}>
+                    <h4>增加冲突 <Play size={12} style={{ marginLeft: 4, opacity: 0.6 }} /></h4>
+                    <p>为剧情添加更多矛盾</p>
+                  </div>
+                  <div className="ai-tool-card" style={{ cursor: 'pointer' }} onClick={() => alert('AI正在扩展情节，请稍候...')}>
+                    <h4>情节扩展 <Play size={12} style={{ marginLeft: 4, opacity: 0.6 }} /></h4>
+                    <p>丰富场景和细节描写</p>
+                  </div>
+                </div>
+
+                <div className="next-steps">
+                  <h4>下一步操作</h4>
+                  <Link to="/casting" className="next-step-item" onClick={() => setParsedView(true)}>
+                    <div className="next-step-icon"><Users size={20} /></div>
+                    <div className="next-step-info">
+                      <h5>智能选角</h5>
+                      <p>从剧本提取角色，匹配资产库形象</p>
+                    </div>
+                    <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
+                  </Link>
+                  <Link to="/scene" className="next-step-item" onClick={() => setParsedView(true)}>
+                    <div className="next-step-icon"><Image size={20} /></div>
+                    <div className="next-step-info">
+                      <h5>场景推荐</h5>
+                      <p>提取剧本场景，匹配或生成场景</p>
+                    </div>
+                    <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
+                  </Link>
+                  <Link to="/storyboard" className="next-step-item">
+                    <div className="next-step-icon"><ListChecks size={20} /></div>
+                    <div className="next-step-info">
+                      <h5>生成分镜</h5>
+                      <p>智能拆分镜头，生成拍摄计划</p>
+                    </div>
+                    <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'novel' && (
+          <div className="script-editor-container">
+            <div className="script-editor-main">
+              <div className="script-toolbar">
+                <button className="btn btn-sm btn-primary">开始转换</button>
+                <button className="btn btn-sm btn-outline">设置转换规则</button>
+              </div>
+              <textarea
+                className="script-textarea-large"
+                placeholder="在这里粘贴小说内容，AI将自动转换为剧本格式...
+
+支持：
+- 小说原文粘贴
+- 自动分场
+- 角色对话提取
+- 动作描写转换"
+              />
+            </div>
+            <div className="ai-assistant-panel">
+              <h3><Wand2 size={18} />转换设置</h3>
+              <div style={{ padding: 16 }}>
+                <div className="setting-group-inline" style={{ marginBottom: 16 }}>
+                  <label>转换风格：</label>
+                  <select className="setting-select">
+                    <option>标准剧本格式</option>
+                    <option>详细描写版</option>
+                    <option>简化对白版</option>
+                  </select>
+                </div>
+                <div className="setting-group-inline" style={{ marginBottom: 16 }}>
+                  <label>场次划分：</label>
+                  <select className="setting-select">
+                    <option>自动根据场景</option>
+                    <option>按章节</option>
+                    <option>按情绪</option>
+                  </select>
+                </div>
+                <button className="btn btn-primary full-width">开始转换</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'parsed' && (
+          <div className="parsing-result">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div>
+                <h2>剧本解析结果</h2>
+                <p style={{ color: 'var(--text-muted)', marginTop: 8 }}>已从剧本中提取以下元素，您可以选择进入对应模块进行详细管理</p>
+              </div>
+              <button
+                className="btn btn-primary"
+                style={{ padding: '12px 24px', fontSize: 16 }}
+                onClick={() => navigate('/project/1')}
+              >
+                🎬 创建项目，进入制作
+              </button>
+            </div>
+            <div className="parsing-grid">
+              <Link to="/casting" className="parsing-card parsing-card-clickable">
+                <h4><Users size={16} /> 人物信息 (4)</h4>
+                <div className="character-list">
+                  {sampleCharacters.map(char => (
+                    <div key={char.id} className="character-item">
+                      <img src={char.avatar} alt={char.name} />
+                      <div>
+                        <strong>{char.name}</strong>
+                        <span>{char.description}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="card-action">
+                  <span>进入选角中心</span> <ArrowRight size={14} />
+                </div>
+              </Link>
+
+              <Link to="/scene" className="parsing-card parsing-card-clickable">
+                <h4><Image size={16} /> 场景信息 (4)</h4>
+                <div className="scene-list">
+                  {sampleScenes.map(scene => (
+                    <div key={scene.id} className="scene-item">
+                      <img src={scene.thumbnail} alt={scene.name} />
+                      <div>
+                        <strong>{scene.name}</strong>
+                        <span>{scene.type === 'interior' ? '室内' : '室外'} · {scene.mood}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="card-action">
+                  <span>进入场景工坊</span> <ArrowRight size={14} />
+                </div>
+              </Link>
+
+              <Link to="/props" className="parsing-card parsing-card-clickable">
+                <h4><Package size={16} /> 道具信息 (4)</h4>
+                <div className="prop-list">
+                  {sampleProps.map(prop => (
+                    <div key={prop.id} className="prop-item">
+                      <img src={prop.thumbnail} alt={prop.name} />
+                      <div>
+                        <strong>{prop.name}</strong>
+                        <span>{prop.description}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="card-action">
+                  <span>进入道具管理</span> <ArrowRight size={14} />
+                </div>
+              </Link>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  )
+}
+
 // Page 3: Casting Center
 function CastingCenter() {
   const [selectedChar, setSelectedChar] = useState<Character | null>(null)
@@ -1402,22 +1727,6 @@ ${promptText}`
 
 // Page 6: Generation Queue
 function GenerationQueue() {
-  // Sample queue data
-  const queueData = [
-    { id: '1', project: '霸总甜妻999次逃婚', episode: '第1集', shot: 4, status: 'processing', progress: 67, createdAt: '10:32:15', completedAt: null, queuePosition: null, totalInQueue: 0 },
-    { id: '2', project: '霸总甜妻999次逃婚', episode: '第1集', shot: 5, status: 'queued', progress: 0, createdAt: '10:31:20', completedAt: null, queuePosition: 1, totalInQueue: 4 },
-    { id: '3', project: '霸总甜妻999次逃婚', episode: '第2集', shot: 6, status: 'queued', progress: 0, createdAt: '10:30:45', completedAt: null, queuePosition: 2, totalInQueue: 4 },
-    { id: '4', project: '都市丽人', episode: '第3集', shot: 2, status: 'queued', progress: 0, createdAt: '10:29:10', completedAt: null, queuePosition: 3, totalInQueue: 4 },
-    { id: '5', project: '霸总甜妻999次逃婚', episode: '第1集', shot: 1, status: 'queued', progress: 0, createdAt: '10:28:30', completedAt: null, queuePosition: 4, totalInQueue: 4 },
-    { id: '6', project: '霸总甜妻999次逃婚', episode: '第1集', shot: 8, status: 'completed', progress: 100, createdAt: '10:15:00', completedAt: '10:28:30', queuePosition: null, totalInQueue: 0 },
-    { id: '7', project: '都市丽人', episode: '第1集', shot: 3, status: 'completed', progress: 100, createdAt: '10:10:20', completedAt: '10:25:15', queuePosition: null, totalInQueue: 0 },
-    { id: '8', project: '霸总甜妻999次逃婚', episode: '第2集', shot: 7, status: 'failed', progress: 0, createdAt: '10:05:00', completedAt: null, queuePosition: null, totalInQueue: 0 },
-  ]
-
-  const processingCount = queueData.filter(t => t.status === 'processing').length
-  const queuedCount = queueData.filter(t => t.status === 'queued').length
-  const completedCount = queueData.filter(t => t.status === 'completed').length
-
   return (
     <div className="dashboard-page">
       <main className="dashboard-content">
@@ -1425,59 +1734,51 @@ function GenerationQueue() {
           <h1>生成队列</h1>
           <div className="queue-stats">
             <span className="stat">
-              <span className="stat-num">{processingCount}</span>进行中
+              <span className="stat-num">2</span>进行中
             </span>
             <span className="stat">
-              <span className="stat-num">{queuedCount}</span>等待中
+              <span className="stat-num">2</span>等待中
             </span>
             <span className="stat completed">
-              <span className="stat-num">{completedCount}</span>已完成
+              <span className="stat-num">2</span>已完成
             </span>
           </div>
         </div>
 
         <div className="queue-list">
           <div className="queue-header">
-            <span>项目名称</span>
-            <span>剧集</span>
+            <span>任务ID</span>
             <span>镜头</span>
             <span>状态</span>
             <span>进度</span>
             <span>创建时间</span>
-            <span>完成时间</span>
             <span>操作</span>
           </div>
-          {queueData.map(task => (
+          {[
+            { id: '1', shot: 4, status: 'processing', progress: 67 },
+            { id: '2', shot: 5, status: 'queued', progress: 0 },
+            { id: '3', shot: 6, status: 'queued', progress: 0 },
+            { id: '4', shot: 2, status: 'completed', progress: 100 },
+            { id: '5', shot: 3, status: 'completed', progress: 100 },
+          ].map(task => (
             <div key={task.id} className={`queue-item ${task.status}`}>
-              <span className="task-project">{task.project}</span>
-              <span className="task-episode">{task.episode}</span>
+              <span className="task-id">#{task.id}</span>
               <span className="task-shot">镜头 #{task.shot}</span>
               <span className={`task-status ${task.status}`}>
-                {task.status === 'processing' && <><div className="status-dot"></div>生成中</>}
-                {task.status === 'queued' && <>等待中 <span className="queue-pos">#{task.queuePosition}</span></>}
+                {task.status === 'processing' && <div className="status-dot"></div>}
+                {task.status === 'queued' && '等待中'}
+                {task.status === 'processing' && '生成中'}
                 {task.status === 'completed' && <><CheckCircle size={14} /> 完成</>}
-                {task.status === 'failed' && <><AlertCircle size={14} /> 失败</>}
               </span>
               <div className="task-progress">
-                {task.status === 'queued' ? (
-                  <div className="queue-progress-info">
-                    <span className="queue-count">{task.queuePosition!}/{task.totalInQueue}</span>
-                    <span className="queue-wait">预计等待约{Math.ceil((task.totalInQueue - task.queuePosition! + 1) * 2.5)}分钟</span>
-                  </div>
-                ) : (
-                  <>
-                    <div className="progress-bar small">
-                      <div className="progress" style={{ width: `${task.progress}%` }}></div>
-                    </div>
-                    <span>{task.progress}%</span>
-                  </>
-                )}
+                <div className="progress-bar small">
+                  <div className="progress" style={{ width: `${task.progress}%` }}></div>
+                </div>
+                <span>{task.progress}%</span>
               </div>
-              <span className="task-time">{task.createdAt}</span>
-              <span className="task-completed-time">{task.completedAt || '-'}</span>
+              <span className="task-time">10:3{task.id}:15</span>
               <div className="task-actions">
                 {task.status === 'completed' && <button className="btn btn-sm btn-outline">查看</button>}
-                {task.status === 'failed' && <button className="btn btn-sm btn-outline">重试</button>}
               </div>
             </div>
           ))}
@@ -1714,9 +2015,6 @@ function AppContent() {
           <Route path="/queue" element={<GenerationQueue />} />
           <Route path="/post" element={<PostStudio />} />
           <Route path="/output" element={<OutputCenter />} />
-          <Route path="/ai-workflow" element={<AIDirectorWorkflow />} />
-          <Route path="/enhanced-director" element={<EnhancedDirectorDemo />} />
-          <Route path="/script-studio-old" element={<OldScriptStudio />} />
         </Routes>
       </div>
     </div>

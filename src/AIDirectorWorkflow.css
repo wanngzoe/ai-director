@@ -1,0 +1,203 @@
+.workflow-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 0;
+}
+
+.workflow-header {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.workflow-header .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+.workflow-header .back-link:hover {
+  color: var(--text);
+}
+
+.workflow-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 8px 0;
+}
+
+.workflow-header .subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* Stage Tabs */
+.stage-tabs {
+  display: flex;
+  gap: 16px;
+  padding: 20px 32px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.stage-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 16px 24px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 200px;
+  text-align: left;
+}
+
+.stage-tab:hover {
+  border-color: var(--primary);
+}
+
+.stage-tab.active {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.stage-tab span {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stage-tab small {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.stage-tab svg {
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+/* Workflow Content */
+.workflow-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px 32px;
+  min-height: 500px;
+}
+
+.input-section,
+.output-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.input-textarea,
+.output-textarea {
+  flex: 1;
+  min-height: 400px;
+  padding: 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  line-height: 1.6;
+  resize: none;
+}
+
+.input-textarea:focus,
+.output-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.output-textarea {
+  background: #1e1e2e;
+  color: #cdd6f4;
+}
+
+.input-stats {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+/* Tips */
+.workflow-tips {
+  margin: 0 32px 32px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.workflow-tips h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 12px 0;
+}
+
+.workflow-tips ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.workflow-tips li {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .workflow-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .workflow-header {
+    padding: 16px 20px;
+  }
+
+  .stage-tabs {
+    padding: 16px 20px;
+  }
+
+  .workflow-content {
+    padding: 16px 20px;
+  }
+
+  .workflow-tips {
+    margin: 0 20px 20px;
+  }
+}
